@@ -20,32 +20,50 @@ int main (int argc, char * argv[]) {
   int circle_radius = 50;
   SDL_Texture * circle = SDL_CreateTexture(renderer, SDL_GetWindowPixelFormat(window), SDL_TEXTUREACCESS_TARGET, 2*circle_radius, 2*circle_radius); // Texture, 100p by 100p
   {
+    int x_dimension;
+    int y_dimension;
+    SDL_QueryTexture(circle, nullptr, nullptr, &x_dimension, &y_dimension);
+    std::cout << "Circle texture dimensions: " << x_dimension << "x" << y_dimension << std::endl;
+  } // Scope to print circle texture dimensions
+  {
     int r = circle_radius;
     int h = 50;
     int k = 50; // (h, k) is circle center point
-    int c; // Result of circle, sometimes r*r
     SDL_SetRenderTarget(renderer, circle); // Set renderer target to circle texture
     SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0x00, 0xff); // Set clear/draw color to black and clear screen
     SDL_RenderClear(renderer);
     SDL_SetRenderDrawColor(renderer, 0xff, 0xff, 0xff, 0xff); // Set draw/clear color to white for drawing points
-    int realx; // The x point on the renderer
-    int realy; // Y on the renderer
-    for (int x = h-r; x < (h+r+1); x++) { // Loop through every x value
-      for (int y = k-r; y < (k+r+1); y++) { // Loop through every y value
-	c = (x-h) * (x-h) + (y-k) * (y-k);
-	if (c == (r * r) ) {
-	  SDL_RenderDrawPoint(renderer, x, y); // Create a point where it is exactly
-	  /*} else {
-	  int dx, dy; // Temporary changes in x or y
-	  if (y - dy) // In progress*/
-	}
+    int x = r-1;
+    int y = 0;
+    int dx = 1;
+    int dy = 1;
+    int err = dx - r * 2;
+
+    while (x >= y) {
+      SDL_RenderDrawPoint(renderer, h + x, k + y);
+      SDL_RenderDrawPoint(renderer, h + y, k + x);
+      SDL_RenderDrawPoint(renderer, h - y, k + x);
+      SDL_RenderDrawPoint(renderer, h - x, k + y);
+      SDL_RenderDrawPoint(renderer, h - x, k - y);
+      SDL_RenderDrawPoint(renderer, h - y, k - x);
+      SDL_RenderDrawPoint(renderer, h + y, k - x);
+      SDL_RenderDrawPoint(renderer, h + x, k - y);
+
+      if (err <= 0) {
+	y++;
+	err += dy;
+	dy += 2;
+      } else {
+	x--;
+	dx += 2;
+	err += -2 * r + dx;
       }
     }
   } // Scope for drawing circle
   SDL_SetRenderTarget(renderer, nullptr); // Reset target to window
   SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0x00, 0xff); // Set draw/clear color to black
   SDL_RenderClear(renderer); // Clear screen
-  SDL_Rect destrect = {0, 0, 100, 100}; // Circle destination
+  SDL_Rect destrect = {0, 0, 2*circle_radius, 2*circle_radius}; // Circle destination
   SDL_RenderCopy(renderer, circle, nullptr, &destrect); // Copy circle to renderer
   SDL_RenderPresent(renderer);
   SDL_Event e;
