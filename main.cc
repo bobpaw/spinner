@@ -1,4 +1,34 @@
 #include "main.h"
+#include <cmath>
+
+int drawCircle (SDL_Renderer * renderer, int h, int k, int r) {
+  int x = r-1;
+  int y = 0;
+  int dx = 1;
+  int dy = 1;
+  int err = dx - r * 2;
+
+  while (x >= y) {
+    SDL_RenderDrawPoint(renderer, h + x, k + y);
+    SDL_RenderDrawPoint(renderer, h + y, k + x);
+    SDL_RenderDrawPoint(renderer, h - y, k + x);
+    SDL_RenderDrawPoint(renderer, h - x, k + y);
+    SDL_RenderDrawPoint(renderer, h - x, k - y);
+    SDL_RenderDrawPoint(renderer, h - y, k - x);
+    SDL_RenderDrawPoint(renderer, h + y, k - x);
+    SDL_RenderDrawPoint(renderer, h + x, k - y);
+    if (err <= 0) {
+      y++;
+      err += dy;
+      dy += 2;
+    } else {
+      x--;
+      dx += 2;
+      err += -2 * r + dx;
+    }
+  }
+  return 0;
+}
 
 int main (int argc, char * argv[]) {
   if (SDL_Init(SDL_INIT_EVERYTHING) == -1) {
@@ -18,48 +48,25 @@ int main (int argc, char * argv[]) {
     return -1;
   }
   int circle_radius = 50;
+  SDL_Point circle_center;
+  circle_center.x = 50;
+  circle_center.y = 50;
   SDL_Texture * circle = SDL_CreateTexture(renderer, SDL_GetWindowPixelFormat(window), SDL_TEXTUREACCESS_TARGET, 2*circle_radius, 2*circle_radius); // Texture, 100p by 100p
-  {
-    int x_dimension;
-    int y_dimension;
-    SDL_QueryTexture(circle, nullptr, nullptr, &x_dimension, &y_dimension);
-    std::cout << "Circle texture dimensions: " << x_dimension << "x" << y_dimension << std::endl;
-  } // Scope to print circle texture dimensions
-  {
-    int r = circle_radius;
-    int h = 50;
-    int k = 50; // (h, k) is circle center point
-    SDL_SetRenderTarget(renderer, circle); // Set renderer target to circle texture
-    SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0x00, 0xff); // Set clear/draw color to black and clear screen
-    SDL_RenderClear(renderer);
-    SDL_SetRenderDrawColor(renderer, 0xff, 0xff, 0xff, 0xff); // Set draw/clear color to white for drawing points
-    int x = r-1;
-    int y = 0;
-    int dx = 1;
-    int dy = 1;
-    int err = dx - r * 2;
-
-    while (x >= y) {
-      SDL_RenderDrawPoint(renderer, h + x, k + y);
-      SDL_RenderDrawPoint(renderer, h + y, k + x);
-      SDL_RenderDrawPoint(renderer, h - y, k + x);
-      SDL_RenderDrawPoint(renderer, h - x, k + y);
-      SDL_RenderDrawPoint(renderer, h - x, k - y);
-      SDL_RenderDrawPoint(renderer, h - y, k - x);
-      SDL_RenderDrawPoint(renderer, h + y, k - x);
-      SDL_RenderDrawPoint(renderer, h + x, k - y);
-
-      if (err <= 0) {
-	y++;
-	err += dy;
-	dy += 2;
-      } else {
-	x--;
-	dx += 2;
-	err += -2 * r + dx;
-      }
-    }
-  } // Scope for drawing circle
+  SDL_SetRenderTarget(renderer, circle); // Set renderer target to circle texture
+  SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0x00, 0xff); // Set clear/draw color to black and clear screen
+  SDL_RenderClear(renderer);
+  SDL_SetRenderDrawColor(renderer, 0xff, 0xff, 0xff, 0xff); // Set draw/clear color to white for drawing points
+  drawCircle(renderer, circle_center.x, circle_center.y, circle_radius); // Draw circle at (50, 50)
+  SDL_Point lines[3];
+  int percent_chance = 30;
+  const double pi = std::atan(1)*4;
+  lines[0].x = 100;
+  lines[0].y = 50;
+  lines[1].x = 50;
+  lines[1].y = 50;
+  lines[2].x = (std::cos(percent_chance*(2*pi/100)) * circle_radius) + circle_center.x;
+  lines[2].y = (std::sin(percent_chance*(2*pi/100)) * circle_radius) + circle_center.y;
+  SDL_RenderDrawLines(renderer, lines, 3);
   SDL_SetRenderTarget(renderer, nullptr); // Reset target to window
   SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0x00, 0xff); // Set draw/clear color to black
   SDL_RenderClear(renderer); // Clear screen
