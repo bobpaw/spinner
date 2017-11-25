@@ -71,11 +71,12 @@ luck-main.o: main.cc /usr/include/stdc-predef.h main.h \
  /usr/include/SDL2/SDL_messagebox.h /usr/include/SDL2/SDL_power.h \
  /usr/include/SDL2/SDL_render.h /usr/include/SDL2/SDL_system.h \
  /usr/include/SDL2/SDL_timer.h /usr/include/SDL2/SDL_version.h \
- /usr/include/c++/6/iostream /usr/include/c++/6/ostream \
- /usr/include/c++/6/ios /usr/include/c++/6/iosfwd \
- /usr/include/c++/6/bits/stringfwd.h /usr/include/c++/6/bits/memoryfwd.h \
- /usr/include/c++/6/bits/postypes.h /usr/include/c++/6/cwchar \
- /usr/include/c++/6/exception \
+ /usr/include/SDL2/SDL_image.h /usr/include/SDL2/SDL.h \
+ /usr/include/SDL2/SDL_ttf.h /usr/include/c++/6/iostream \
+ /usr/include/c++/6/ostream /usr/include/c++/6/ios \
+ /usr/include/c++/6/iosfwd /usr/include/c++/6/bits/stringfwd.h \
+ /usr/include/c++/6/bits/memoryfwd.h /usr/include/c++/6/bits/postypes.h \
+ /usr/include/c++/6/cwchar /usr/include/c++/6/exception \
  /usr/include/c++/6/bits/atomic_lockfree_defines.h \
  /usr/include/c++/6/bits/exception_ptr.h \
  /usr/include/c++/6/bits/exception_defines.h \
@@ -139,7 +140,16 @@ luck-main.o: main.cc /usr/include/stdc-predef.h main.h \
  /usr/include/c++/6/bits/locale_facets.tcc \
  /usr/include/c++/6/bits/basic_ios.tcc \
  /usr/include/c++/6/bits/ostream.tcc /usr/include/c++/6/istream \
- /usr/include/c++/6/bits/istream.tcc
+ /usr/include/c++/6/bits/istream.tcc /usr/include/c++/6/random \
+ /usr/include/c++/6/limits /usr/include/c++/6/bits/random.h \
+ /usr/include/c++/6/vector /usr/include/c++/6/bits/stl_construct.h \
+ /usr/include/c++/6/bits/stl_uninitialized.h \
+ /usr/include/c++/6/bits/stl_vector.h \
+ /usr/include/c++/6/bits/stl_bvector.h /usr/include/c++/6/bits/vector.tcc \
+ /usr/include/c++/6/bits/uniform_int_dist.h \
+ /usr/include/x86_64-linux-gnu/c++/6/bits/opt_random.h \
+ /usr/include/c++/6/bits/random.tcc /usr/include/c++/6/numeric \
+ /usr/include/c++/6/bits/stl_numeric.h
 
 /usr/include/stdc-predef.h:
 
@@ -363,6 +373,12 @@ main.h:
 
 /usr/include/SDL2/SDL_version.h:
 
+/usr/include/SDL2/SDL_image.h:
+
+/usr/include/SDL2/SDL.h:
+
+/usr/include/SDL2/SDL_ttf.h:
+
 /usr/include/c++/6/iostream:
 
 /usr/include/c++/6/ostream:
@@ -542,3 +558,31 @@ main.h:
 /usr/include/c++/6/istream:
 
 /usr/include/c++/6/bits/istream.tcc:
+
+/usr/include/c++/6/random:
+
+/usr/include/c++/6/limits:
+
+/usr/include/c++/6/bits/random.h:
+
+/usr/include/c++/6/vector:
+
+/usr/include/c++/6/bits/stl_construct.h:
+
+/usr/include/c++/6/bits/stl_uninitialized.h:
+
+/usr/include/c++/6/bits/stl_vector.h:
+
+/usr/include/c++/6/bits/stl_bvector.h:
+
+/usr/include/c++/6/bits/vector.tcc:
+
+/usr/include/c++/6/bits/uniform_int_dist.h:
+
+/usr/include/x86_64-linux-gnu/c++/6/bits/opt_random.h:
+
+/usr/include/c++/6/bits/random.tcc:
+
+/usr/include/c++/6/numeric:
+
+/usr/include/c++/6/bits/stl_numeric.h:

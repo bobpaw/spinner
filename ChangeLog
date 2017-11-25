@@ -1,3 +1,21 @@
+2017-11-25  Aiden Woodruff  <aidenpw@hotmail.com>
+
+	* Makefile.am: Linked SDL2_image and SDL2_ttf
+
+	* main.h: Included SDL2_image and SDL2_ttf
+
+	* main.cc: Included <random>
+	Input percent chance and circle radius at beginning
+	Draw spinner
+	Loop to draw spinner
+	Random time before spin is done
+	Draw text 'Money: ' below circle
+	Spinner renders around circle center
+
+	* protospinner.xcf: gimp file added
+
+	* protospinner.png: Spinner image, as png
+
 2017-11-19  Aiden Woodruff  <aidenpw@hotmail.com>
 
 	* main.cc (drawCircle): Function created and circle drawing code moved here.

@@ -310,7 +310,7 @@ top_srcdir = @top_srcdir@
 AUTOMAKE_OPTIONS = gnu dist-bzip2 no-dist-gzip
 luck_SOURCES = main.cc
 include_HEADERS = main.h
-luck_CXXFLAGS = -lSDL2
+luck_CXXFLAGS = -lSDL2 -lSDL2_image -lSDL2_ttf
 all: config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-am
 
