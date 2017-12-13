@@ -32,13 +32,6 @@ int drawCircle (SDL_Renderer * renderer, int h, int k, int r) {
 }
 
 int main (int argc, char * argv[]) {
-  std::random_device random;
-  float percent_chance = 0;
-  int circle_radius = 0;
-  std::cout << "Percent chance: " << std::flush;
-  std::cin >> percent_chance;
-  std::cout << "Circle radius: " << std::flush;
-  std::cin >> circle_radius;
   if (SDL_Init(SDL_INIT_EVERYTHING) == -1) {
     std::cerr << "SDL could not init. SDL_error: " << SDL_GetError() << std::endl;
     return -1;
@@ -53,14 +46,6 @@ int main (int argc, char * argv[]) {
   }
   SDL_Renderer * renderer = nullptr;
   SDL_Window * window = nullptr;
-  TTF_Font * font = TTF_OpenFont("FreeMono.ttf", 16);
-  if (font == nullptr) {
-    std::cerr << "Failed to load FreeMono font! SDL_ttf Error: " << TTF_GetError() << std::endl;
-    return -1;
-  }
-  SDL_Color textcolor = {255, 255, 255};
-  SDL_Texture * money_texture = nullptr;
-  SDL_Rect money_dest_rect = {0, circle_radius*2, 0, 0};
   window = SDL_CreateWindow("Money", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 640, 400, SDL_WINDOW_SHOWN); // 640x400 window with title set to 'Money'
   if (window == nullptr) {
     std::cerr << "SDL couldn't create window. SDL_error: " << SDL_GetError() << std::endl;
@@ -71,9 +56,28 @@ int main (int argc, char * argv[]) {
     std::cerr << "SDL couldn't create renderer. SDL_error: " << SDL_GetError() << std::endl;
     return -1;
   }
+  TTF_Font * font = TTF_OpenFont("FreeMono.ttf", 16);
+  if (font == nullptr) {
+    std::cerr << "Failed to load FreeMono font! SDL_ttf Error: " << TTF_GetError() << std::endl;
+    return -1;
+  }
+  std::random_device random;
+  float percent_chance = 25;
+  int circle_radius = 100;
+  SDL_Event e;
+  int sdl_angle = 0;
+  SDL_Point rotate_point;
+  int x = 0;
+  int add = 20;
+  SDL_Color textcolor = {255, 255, 255};
+  SDL_Texture * money_texture = nullptr;
+  SDL_Rect money_dest_rect = {0, circle_radius*2, 0, 0};
+  SDL_Texture * circle = nullptr;
   SDL_Texture * spinner = nullptr;
   SDL_Rect spinner_rect;
   SDL_Rect spinner_dest_rect;
+  SDL_Point lines[3];
+  const double pi = std::atan(1)*4;
   {
     SDL_Surface * temp_surface = nullptr;
     temp_surface = IMG_Load("protospinner.png");
@@ -113,14 +117,13 @@ int main (int argc, char * argv[]) {
   spinner_dest_rect.w = (90*circle_radius/100)*139/313;
   spinner_dest_rect.x = circle_center.x - spinner_dest_rect.w/2;
   spinner_dest_rect.y = circle_center.y - spinner_dest_rect.h;
-  SDL_Texture * circle = SDL_CreateTexture(renderer, SDL_GetWindowPixelFormat(window), SDL_TEXTUREACCESS_TARGET, 2*circle_radius, 2*circle_radius); // Texture, 100p by 100p
+  {
+  circle = SDL_CreateTexture(renderer, SDL_GetWindowPixelFormat(window), SDL_TEXTUREACCESS_TARGET, 2*circle_radius, 2*circle_radius); // Texture, 100p by 100p
   SDL_SetRenderTarget(renderer, circle); // Set renderer target to circle texture
   SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0x00, 0xff); // Set clear/draw color to black and clear screen
   SDL_RenderClear(renderer);
   SDL_SetRenderDrawColor(renderer, 0xff, 0xff, 0xff, 0xff); // Set draw/clear color to white for drawing points
   drawCircle(renderer, circle_center.x, circle_center.y, circle_radius); // Draw circle at (50, 50)
-  SDL_Point lines[3];
-  const double pi = std::atan(1)*4;
   lines[0].x = 2*circle_radius;
   lines[0].y = circle_radius;
   lines[1].x = circle_radius;
@@ -130,15 +133,11 @@ int main (int argc, char * argv[]) {
   SDL_RenderDrawLines(renderer, lines, 3);
   SDL_SetRenderTarget(renderer, nullptr); // Reset target to window
   SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0x00, 0xff); // Set draw/clear color to black
+  }
   SDL_RenderClear(renderer); // Clear screen
-  SDL_Rect destrect = {0, 0, 2*circle_radius, 2*circle_radius}; // Circle destination
-  SDL_RenderCopy(renderer, circle, nullptr, &destrect); // Copy circle to renderer
+  SDL_Rect circle_dest_rect = {0, 0, 2*circle_radius, 2*circle_radius}; // Circle destination
+  SDL_RenderCopy(renderer, circle, nullptr, &circle_dest_rect); // Copy circle to renderer
   SDL_RenderPresent(renderer);
-  SDL_Event e;
-  int sdl_angle = 0;
-  SDL_Point rotate_point;
-  int x = 0;
-  int add = 20;
   rotate_point.x = spinner_dest_rect.w/2;
   rotate_point.y = spinner_dest_rect.h;
   int rand_val = random() % 1000;
@@ -148,7 +147,7 @@ int main (int argc, char * argv[]) {
     x++;
     SDL_RenderClear(renderer);
     SDL_RenderCopy(renderer, money_texture, nullptr, &money_dest_rect);
-    SDL_RenderCopy(renderer, circle, nullptr, &destrect);
+    SDL_RenderCopy(renderer, circle, nullptr, &circle_dest_rect);
     SDL_RenderCopyEx(renderer, spinner, &spinner_rect, &spinner_dest_rect, (double) sdl_angle, &rotate_point, SDL_FLIP_NONE);
     SDL_RenderPresent(renderer);
     SDL_PollEvent(&e);
@@ -164,7 +163,7 @@ int main (int argc, char * argv[]) {
     sdl_angle+=add;
     SDL_RenderClear(renderer);
     SDL_RenderCopy(renderer, money_texture, nullptr, &money_dest_rect);
-    SDL_RenderCopy(renderer, circle, nullptr, &destrect);
+    SDL_RenderCopy(renderer, circle, nullptr, &circle_dest_rect);
     SDL_RenderCopyEx(renderer, spinner, &spinner_rect, &spinner_dest_rect, (double) sdl_angle, &rotate_point, SDL_FLIP_NONE);
     SDL_RenderPresent(renderer);
     SDL_PollEvent(&e);
