@@ -75,7 +75,10 @@ int main (int argc, char * argv[]) {
   // SDL_ttf variables
   SDL_Color textcolor = {255, 255, 255};
   SDL_Texture * money_texture = nullptr;
+  SDL_Texture * nums_texture = nullptr;
   SDL_Rect money_dest_rect = {0, circle_radius*2, 0, 0};
+  SDL_Rect nums_source_rect[10];
+  SDL_Rect num_dest_rect = {0, 0, 0, 0};
 
   // Textures and Textures information
   SDL_Texture * circle = nullptr;
@@ -133,7 +136,7 @@ int main (int argc, char * argv[]) {
     spinner_rect.h = temp_surface->h;
     SDL_FreeSurface(temp_surface);
 
-    // Create text
+    // Create 'Money: ' text
     temp_surface = TTF_RenderText_Solid(font, "Money: ", textcolor);
     if (temp_surface == nullptr) {
       std::cerr << "Unable to render text surface! SDL_ttf Error: " << TTF_GetError() << std::endl;
@@ -151,6 +154,30 @@ int main (int argc, char * argv[]) {
     money_dest_rect.w = temp_surface->w;
     money_dest_rect.h = temp_surface->h;
     SDL_FreeSurface(temp_surface);
+
+    // Create '0123456789' spritemap
+    temp_surface = TTF_RenderText_Solid(font, "0123456789", textcolor);
+    if (temp_surface == nullptr) {
+      std::cerr << "Unable to render text surface! SDL_ttf Error: " << TTF_GetError() << std::endl;
+      return -1;
+    }
+
+    // Optimize surface
+    nums_texture = SDL_CreateTextureFromSurface(renderer, temp_surface);
+    if (nums_texture == nullptr) {
+      std::cerr << "Unable to create texture from rendered text! SDL Error: " << SDL_GetError << std::endl;
+      return -1;
+    }
+
+    // Extract dimensions
+    for (int i = 0; i < 10; i++) {
+      nums_source_rect[i].w = temp_surface->w / 10;
+      nums_source_rect[i].h = temp_surface->h;
+      nums_source_rect[i].x = nums_source_rect[i].w * i;
+      nums_source_rect[i].y = 0;
+    }
+    SDL_FreeSurface(temp_surface);
+    
   }
 
   // Draw circle and lines
@@ -221,6 +248,7 @@ int main (int argc, char * argv[]) {
   SDL_DestroyTexture(circle); // Destroy circle texture
   SDL_DestroyTexture(spinner);
   SDL_DestroyTexture(money_texture);
+  SDL_DestroyTexture(nums_texture);
   SDL_DestroyRenderer(renderer); // Kill renderer
   SDL_DestroyWindow(window); // Kill Window
 
