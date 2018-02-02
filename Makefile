@@ -211,9 +211,9 @@ am__remove_distdir = \
       || { sleep 5 && rm -rf "$(distdir)"; }; \
   else :; fi
 am__post_remove_distdir = $(am__remove_distdir)
+DIST_ARCHIVES = $(distdir).tar.gz
 GZIP_ENV = --best
-DIST_ARCHIVES = $(distdir).tar.bz2
-DIST_TARGETS = dist-bzip2
+DIST_TARGETS = dist-gzip
 distuninstallcheck_listfiles = find . -type f -print
 am__distuninstallcheck_listfiles = $(distuninstallcheck_listfiles) \
   | sed 's|^\./|$(prefix)/|' | grep -v '$(infodir)/dir$$'
@@ -307,7 +307,7 @@ target_alias =
 top_build_prefix = 
 top_builddir = .
 top_srcdir = .
-AUTOMAKE_OPTIONS = gnu dist-bzip2 no-dist-gzip
+AUTOMAKE_OPTIONS = gnu
 luck_SOURCES = main.cc
 include_HEADERS = main.h
 luck_CXXFLAGS = -lSDL2 -lSDL2_image -lSDL2_ttf
@@ -569,6 +569,7 @@ distdir: $(DISTFILES)
 dist-gzip: distdir
 	tardir=$(distdir) && $(am__tar) | GZIP=$(GZIP_ENV) gzip -c >$(distdir).tar.gz
 	$(am__post_remove_distdir)
+
 dist-bzip2: distdir
 	tardir=$(distdir) && $(am__tar) | BZIP2=$${BZIP2--9} bzip2 -c >$(distdir).tar.bz2
 	$(am__post_remove_distdir)

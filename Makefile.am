@@ -1,4 +1,4 @@
-AUTOMAKE_OPTIONS = gnu dist-bzip2 no-dist-gzip
+AUTOMAKE_OPTIONS = gnu
 bin_PROGRAMS = luck
 luck_SOURCES = main.cc
 include_HEADERS = main.h
