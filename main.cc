@@ -71,6 +71,8 @@ int main (int argc, char * argv[]) {
   int circle_radius = 100;
   SDL_Event e;
   bool quit_pressed = false;
+  int money = 100;
+  std::string money_string = std::to_string(money);
 
   // SDL_ttf variables
   SDL_Color textcolor = {255, 255, 255};
@@ -176,6 +178,8 @@ int main (int argc, char * argv[]) {
       nums_source_rect[i].x = nums_source_rect[i].w * i;
       nums_source_rect[i].y = 0;
     }
+    num_dest_rect.w = nums_source_rect[0].w;
+    num_dest_rect.h = nums_source_rect[0].h;
     SDL_FreeSurface(temp_surface);
     
   }
@@ -212,6 +216,14 @@ int main (int argc, char * argv[]) {
     delay_time++;
     SDL_RenderClear(renderer);
     SDL_RenderCopy(renderer, money_texture, nullptr, &money_dest_rect);
+    num_dest_rect.y = money_dest_rect.y;
+    money_string = std::to_string(money);
+    num_dest_rect.x = money_dest_rect.x + money_dest_rect.w;
+    for (int i = 0, x = 0; i < money_string.length(); i++) {
+      x = std::stoi(money_string.substr(i, 1));
+      SDL_RenderCopy(renderer, nums_texture, &(nums_source_rect[x]), &num_dest_rect);
+      num_dest_rect.x += nums_source_rect[x].w;
+    }
     SDL_RenderCopy(renderer, circle, nullptr, &circle_dest_rect);
     SDL_RenderCopyEx(renderer, spinner, &spinner_rect, &spinner_dest_rect, (double) sdl_angle, &rotate_point, SDL_FLIP_NONE);
     SDL_RenderPresent(renderer);
@@ -230,6 +242,14 @@ int main (int argc, char * argv[]) {
     }
     SDL_RenderClear(renderer);
     SDL_RenderCopy(renderer, money_texture, nullptr, &money_dest_rect);
+    num_dest_rect.y = money_dest_rect.y;
+    money_string = std::to_string(money);
+    num_dest_rect.x = money_dest_rect.x + money_dest_rect.w;
+    for (int i = 0, x = 0; i < money_string.length(); i++) {
+      x = std::stoi(money_string.substr(i, 1));
+      SDL_RenderCopy(renderer, nums_texture, &(nums_source_rect[x]), &num_dest_rect);
+      num_dest_rect.x += nums_source_rect[x].w;
+    }
     SDL_RenderCopy(renderer, circle, nullptr, &circle_dest_rect);
     SDL_RenderCopyEx(renderer, spinner, &spinner_rect, &spinner_dest_rect, (double) sdl_angle, &rotate_point, SDL_FLIP_NONE);
     SDL_RenderPresent(renderer);
