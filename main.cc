@@ -209,7 +209,11 @@ int main (int argc, char * argv[]) {
   SDL_RenderPresent(renderer);
 
   // Random spin time
-  rand_val = random() % 1000;
+  if (argc > 1) {
+    rand_val = std::strtol(argv[1], NULL, 10);
+  } else {
+    rand_val = random() % 1000;
+  }
   while (delay_time < rand_val && quit_pressed == false) {
     SDL_Delay(1);
     sdl_angle += add;
@@ -258,11 +262,13 @@ int main (int argc, char * argv[]) {
   }
 
   // Wait for X before exiting
+  if (argc == 1) {
   do {
     SDL_Delay(20);
     SDL_RenderPresent(renderer);
     SDL_PollEvent(&e);
   } while (e.type != SDL_QUIT && quit_pressed == false);
+  }
 
   // Deconstruction
   SDL_DestroyTexture(circle); // Destroy circle texture
