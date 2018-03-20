@@ -1,13 +1,3 @@
-
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
-#include <SDL2/SDL_ttf.h>
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <math.h>
-#include <string.h>
-#include <stdbool.h>
 #include "main.h"
 
 int drawCircle (SDL_Renderer * renderer, int h, int k, int r) {
@@ -36,6 +26,33 @@ int drawCircle (SDL_Renderer * renderer, int h, int k, int r) {
     }
   }
   return 0;
+}
+
+static SDL_Texture* create_text_texture (TTF_Font * font, SDL_Renderer * renderer, SDL_Color textcolor, const char * text, SDL_Rect * destrect) {
+  SDL_Surface * temp_surface = NULL;
+  SDL_Texture * result = NULL;
+
+  // Create text surface
+  temp_surface = TTF_RenderText_Solid(font, text, textcolor);
+  if (temp_surface == NULL) {
+    fprintf(stderr, "Unable to render text surface! SDL_ttf Error: %s\n", TTF_GetError());
+    return NULL;
+  }
+
+  // Optimize surface
+  result = SDL_CreateTextureFromSurface(renderer, temp_surface);
+  if (result == NULL) {
+    fprintf(stderr, "Unable to create texture from rendered text! SDL Error: %s\n", SDL_GetError());
+    return NULL;
+  }
+
+  // Extract dimensions
+  if (destrect != NULL) {
+    destrect->w = temp_surface->w;
+    destrect->h = temp_surface->h;
+  }
+  SDL_FreeSurface(temp_surface);
+  return result;
 }
 
 int main (int argc, char * argv[]) {
@@ -72,7 +89,10 @@ int main (int argc, char * argv[]) {
   }
 
   // Variables
-  float percent_chance = 25;
+  int percent_chance = 25;
+  int multiplier = 4;
+  char * multiplier_str = NULL;
+  char * temp_str = NULL;
   int circle_radius = 100;
   SDL_Event e;
   bool quit_pressed = false;
@@ -84,12 +104,17 @@ int main (int argc, char * argv[]) {
   SDL_Color textcolor = {255, 255, 255};
   SDL_Texture * money_texture = NULL;
   SDL_Texture * nums_texture = NULL;
+  SDL_Texture * multiplier_texture = NULL;
   SDL_Rect money_dest_rect;
   memset(&money_dest_rect, 0, sizeof(money_dest_rect));
   money_dest_rect.y = circle_radius * 2;
   SDL_Rect nums_source_rect[10];
   SDL_Rect num_dest_rect;
   memset(&num_dest_rect, 0, sizeof(num_dest_rect));
+  SDL_Rect multiplier_dest_rect;
+  memset(&multiplier_dest_rect, 0, sizeof(multiplier_dest_rect));
+  money_texture = create_text_texture(font, renderer, textcolor, "Money: ", &money_dest_rect);
+  multiplier_texture = create_text_texture(font, renderer, textcolor, "Multiplier: ", &multiplier_dest_rect);
 
   // Textures and Textures information
   SDL_Texture * circle = NULL;
@@ -151,25 +176,6 @@ int main (int argc, char * argv[]) {
     spinner_rect.h = temp_surface->h;
     SDL_FreeSurface(temp_surface);
 
-    // Create 'Money: ' text
-    temp_surface = TTF_RenderText_Solid(font, "Money: ", textcolor);
-    if (temp_surface == NULL) {
-      fprintf(stderr, "Unable to render text surface! SDL_ttf Error: %s\n", TTF_GetError());
-      return -1;
-    }
-
-    // Optimize text
-    money_texture = SDL_CreateTextureFromSurface(renderer, temp_surface);
-    if (money_texture == NULL) {
-      fprintf(stderr, "Unable to create texture from rendered text! SDL Error: %s\n", SDL_GetError());
-      return -1;
-    }
-
-    // Extract dimensions
-    money_dest_rect.w = temp_surface->w;
-    money_dest_rect.h = temp_surface->h;
-    SDL_FreeSurface(temp_surface);
-
     // Create '0123456789' spritemap
     temp_surface = TTF_RenderText_Solid(font, "0123456789", textcolor);
     if (temp_surface == NULL) {
@@ -197,93 +203,90 @@ int main (int argc, char * argv[]) {
     
   }
 
-  // Draw circle and lines
-  {
-    SDL_SetRenderTarget(renderer, circle); // Set renderer target to circle texture
-    SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0x00, 0xff); // Set clear/draw color to black and clear screen
+  while (!quit_pressed) {
+    // Get multiplier to use
     SDL_RenderClear(renderer);
-    SDL_SetRenderDrawColor(renderer, 0xff, 0xff, 0xff, 0xff); // Set draw/clear color to white for drawing points
-    drawCircle(renderer, circle_center.x, circle_center.y, circle_radius); // Draw circle at (50, 50)
-    SDL_Point lines[3];
-    lines[0].x = 2*circle_radius;
-    lines[0].y = circle_radius;
-    lines[1].x = circle_radius;
-    lines[1].y = circle_radius;
-    lines[2].x = (cos(percent_chance*(2*M_PI/100)) * circle_radius) + circle_center.x;
-    lines[2].y = (sin(percent_chance*(2*M_PI/100)) * circle_radius) + circle_center.y;
-    SDL_RenderDrawLines(renderer, lines, 3);
-    SDL_SetRenderTarget(renderer, NULL); // Reset target to window
-    SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0x00, 0xff); // Set draw/clear color to black
-  }
-
-  // Pre-loop
-  SDL_RenderClear(renderer); // Clear screen
-  SDL_RenderCopy(renderer, circle, NULL, &circle_dest_rect); // Copy circle to renderer
-  SDL_RenderPresent(renderer);
-
-  // Random spin time
-  if (argc > 1) {
-    rand_val = strtol(argv[1], NULL, 10);
-  } else {
-  rand_val = random() % 1000;
-  }
-  while (delay_time < rand_val && quit_pressed == false) {
-    SDL_Delay(1);
-    sdl_angle += add;
-    delay_time++;
-    SDL_RenderClear(renderer);
-    SDL_RenderCopy(renderer, money_texture, NULL, &money_dest_rect);
-    num_dest_rect.y = money_dest_rect.y;
-    sprintf(money_string, "%d", money);
-    num_dest_rect.x = money_dest_rect.x + money_dest_rect.w;
-    for (int i = 0, x = 0; i < strlen(money_string); i++) {
-      x = money_string[i] - '0';
-      SDL_RenderCopy(renderer, nums_texture, &(nums_source_rect[x]), &num_dest_rect);
-      num_dest_rect.x += nums_source_rect[x].w;
+    SDL_RenderCopy(renderer, multiplier_texture, NULL, &multiplier_dest_rect);
+    
+    // Draw circle and lines
+    {
+      SDL_SetRenderTarget(renderer, circle); // Set renderer target to circle texture
+      SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0x00, 0xff); // Set clear/draw color to black and clear screen
+      SDL_RenderClear(renderer);
+      SDL_SetRenderDrawColor(renderer, 0xff, 0xff, 0xff, 0xff); // Set draw/clear color to white for drawing points
+      drawCircle(renderer, circle_center.x, circle_center.y, circle_radius); // Draw circle at (50, 50)
+      SDL_Point lines[3];
+      lines[0].x = 2*circle_radius;
+      lines[0].y = circle_radius;
+      lines[1].x = circle_radius;
+      lines[1].y = circle_radius;
+      lines[2].x = (cos(percent_chance*(2*M_PI/100)) * circle_radius) + circle_center.x;
+      lines[2].y = (sin(percent_chance*(2*M_PI/100)) * circle_radius) + circle_center.y;
+      SDL_RenderDrawLines(renderer, lines, 3);
+      SDL_SetRenderTarget(renderer, NULL); // Reset target to window
+      SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0x00, 0xff); // Set draw/clear color to black
     }
-    SDL_RenderCopy(renderer, circle, NULL, &circle_dest_rect);
-    SDL_RenderCopyEx(renderer, spinner, &spinner_rect, &spinner_dest_rect, (double) sdl_angle, &rotate_point, SDL_FLIP_NONE);
-    SDL_RenderPresent(renderer);
-    SDL_PollEvent(&e);
-    if (e.type == SDL_QUIT) quit_pressed = true;
-  }
 
-  // Spin to stop
-  delay_time = 0;
-  while (quit_pressed == false && delay_time != 100) {
-    if (delay_time < 100) {
+    // Pre-loop
+    SDL_RenderClear(renderer); // Clear screen
+    SDL_RenderCopy(renderer, circle, NULL, &circle_dest_rect); // Copy circle to renderer
+    SDL_RenderPresent(renderer);
+
+    // Random spin time
+    if (argc > 1) {
+      rand_val = strtol(argv[1], NULL, 10);
+    } else {
+      rand_val = random() % 1000;
+    }
+    while (delay_time < rand_val && quit_pressed == false) {
+      SDL_Delay(1);
+      sdl_angle += add;
       delay_time++;
-      SDL_Delay(delay_time);
-      if (delay_time % 5 == 0 && add > 1) add--;
-    sdl_angle += add;
+      SDL_RenderClear(renderer);
+      SDL_RenderCopy(renderer, money_texture, NULL, &money_dest_rect);
+      num_dest_rect.y = money_dest_rect.y;
+      sprintf(money_string, "%d", money);
+      num_dest_rect.x = money_dest_rect.x + money_dest_rect.w;
+      for (int i = 0, x = 0; i < strlen(money_string); i++) {
+	x = money_string[i] - '0';
+	SDL_RenderCopy(renderer, nums_texture, &(nums_source_rect[x]), &num_dest_rect);
+	num_dest_rect.x += nums_source_rect[x].w;
+      }
+      SDL_RenderCopy(renderer, circle, NULL, &circle_dest_rect);
+      SDL_RenderCopyEx(renderer, spinner, &spinner_rect, &spinner_dest_rect, (double) sdl_angle, &rotate_point, SDL_FLIP_NONE);
+      SDL_RenderPresent(renderer);
+      SDL_PollEvent(&e);
+      if (e.type == SDL_QUIT) quit_pressed = true;
     }
-    SDL_RenderClear(renderer);
-    SDL_RenderCopy(renderer, money_texture, NULL, &money_dest_rect);
-    num_dest_rect.y = money_dest_rect.y;
-    sprintf(money_string, "%d", money);
-    num_dest_rect.x = money_dest_rect.x + money_dest_rect.w;
-    for (int i = 0, x = 0; i < strlen(money_string); i++) {
-      x = money_string[i] - '0';
-      SDL_RenderCopy(renderer, nums_texture, &(nums_source_rect[x]), &num_dest_rect);
-      num_dest_rect.x += nums_source_rect[x].w;
+
+    // Spin to stop
+    delay_time = 0;
+    while (quit_pressed == false && delay_time != 100) {
+      if (delay_time < 100) {
+	delay_time++;
+	SDL_Delay(delay_time);
+	if (delay_time % 5 == 0 && add > 1) add--;
+	sdl_angle += add;
+      }
+      SDL_RenderClear(renderer);
+      SDL_RenderCopy(renderer, money_texture, NULL, &money_dest_rect);
+      num_dest_rect.y = money_dest_rect.y;
+      sprintf(money_string, "%d", money);
+      num_dest_rect.x = money_dest_rect.x + money_dest_rect.w;
+      for (int i = 0, x = 0; i < strlen(money_string); i++) {
+	x = money_string[i] - '0';
+	SDL_RenderCopy(renderer, nums_texture, &(nums_source_rect[x]), &num_dest_rect);
+	num_dest_rect.x += nums_source_rect[x].w;
+      }
+      SDL_RenderCopy(renderer, circle, NULL, &circle_dest_rect);
+      SDL_RenderCopyEx(renderer, spinner, &spinner_rect, &spinner_dest_rect, (double) sdl_angle, &rotate_point, SDL_FLIP_NONE);
+      SDL_RenderPresent(renderer);
+      SDL_PollEvent(&e);
+      if (e.type == SDL_QUIT) quit_pressed = true;
     }
-    SDL_RenderCopy(renderer, circle, NULL, &circle_dest_rect);
-    SDL_RenderCopyEx(renderer, spinner, &spinner_rect, &spinner_dest_rect, (double) sdl_angle, &rotate_point, SDL_FLIP_NONE);
-    SDL_RenderPresent(renderer);
-    SDL_PollEvent(&e);
-    if (e.type == SDL_QUIT) quit_pressed = true;
-  }
 
-  // Wait for X before exiting
-  if (argc == 1) {
-  do {
-    SDL_Delay(20);
-    SDL_RenderPresent(renderer);
-    SDL_PollEvent(&e);
-  } while (e.type != SDL_QUIT && quit_pressed == false);
-  }
-
-   // Deconstruction
+  } // while (!quit_pressed)
+  // Deconstruction
   SDL_DestroyTexture(circle); // Destroy circle texture
   SDL_DestroyTexture(spinner);
   SDL_DestroyTexture(money_texture);

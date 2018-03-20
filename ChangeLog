@@ -1,3 +1,22 @@
+2018-03-19  Aiden Woodruff  <aiden.woodruff@gmail.com>
+
+	NEW POLICY: Run `make maintainer-clean` before commits.
+
+	* main.h: Moved #includes here.
+
+	* main.c: Moved #includes away.
+
+	* main.c (create_text_texture): Function created.
+	Returns a rendered text texture.
+	Moved code out of main so it's easier to call on the fly.
+
+	* main.c (main): percent_chance can only be integer.
+	Multiplier created (percent_chance based off this).
+	Temporary string created to write text to window as typing.
+	Lines drawn each spin (moved to inside loop).
+	Moved most things into loop.
+	Currently spins infinitely after finished spinning to stop.
+
 2017-12-13  Aiden Woodruff  <aidenpw@hotmail.com>
 
 	* main.cc: Moved variable declarations to beginning of file.
