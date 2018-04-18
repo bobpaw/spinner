@@ -1,0 +1,39 @@
+# Project is written in C (defines some useful defaults)
+language: c
+
+# Save time by only getting the current repository status
+git:
+  depth: false
+
+# Test both clang and gcc
+compiler:
+  - clang
+  - gcc
+
+# Set autoconf version
+env:
+  - VERSION=1.0
+
+# Test both linux and osx
+os:
+  - linux
+  - osx
+
+# Install requirements with apt
+addons:
+  apt:
+    packages:
+    - libsdl2-dev
+    - libsdl2-image-dev
+    - libsdl2-ttf-dev
+    - make
+
+# Make sure to change to the distribution directory
+before_script:
+  - tar zxf "luck-${VERSION}.tar.gz"
+  - cd "luck-${VERSION}"
+
+# Actually check if it works
+script:
+  - ./configure && make && make check
+  - ./luck

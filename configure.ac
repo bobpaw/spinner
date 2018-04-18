@@ -11,11 +11,12 @@ AC_PROG_CC
 
 # Checks for libraries.
 # FIXME: Replace `main' with a function in `-lSDL2':
-AC_CHECK_LIB([SDL2], [SDL_Init])
+AC_CHECK_LIB([SDL2], [SDL_Init], [], [AC_MSG_ERROR([SDL2 is required])])
 # FIXME: Replace `main' with a function in `-lSDL2_image':
-AC_CHECK_LIB([SDL2_image], [IMG_Init])
+AC_CHECK_LIB([SDL2_image], [IMG_Init], [], [AC_MSG_ERROR([SDL2-image is required])])
 # FIXME: Replace `main' with a function in `-lSDL2_ttf':
-AC_CHECK_LIB([SDL2_ttf], [TTF_Init])
+AC_CHECK_LIB([SDL2_ttf], [TTF_Init], [], [AC_MSG_ERROR([SDL2-ttf is required])])
+AC_CHECK_LIB([m], [pow])
 
 # Checks for header files.
 AC_CHECK_HEADERS([stdlib.h string.h])

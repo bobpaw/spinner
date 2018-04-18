@@ -1,0 +1,3 @@
+args "--file-name=cmdline-luck"
+
+option "time" t "Time to spin for, mainly for testing" int optional

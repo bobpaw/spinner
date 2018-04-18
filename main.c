@@ -56,6 +56,10 @@ static SDL_Texture* create_text_texture (TTF_Font * font, SDL_Renderer * rendere
 }
 
 int main (int argc, char * argv[]) {
+  // This first in case you don't need more than version
+  struct gengetopt_args_info args_info;
+  if (cmdline_parser(argc, argv, &args_info) != 0) exit(EXIT_FAILURE);
+
   // Initialize modules
   if (SDL_Init(SDL_INIT_EVERYTHING) == -1) {
     fprintf(stderr, "SDL could not init. SDL_error: %s\n", SDL_GetError());  
@@ -233,10 +237,44 @@ int main (int argc, char * argv[]) {
     SDL_RenderPresent(renderer);
 
     // Random spin time
-    if (argc > 1) {
-      rand_val = strtol(argv[1], NULL, 10);
+    if (args_info.time_given) {
+      rand_val = args_info.time_arg;
     } else {
       rand_val = random() % 1000;
+    }
+    SDL_bool done = SDL_FALSE;
+    char * text = malloc(32);
+    memset(text, 0, 32);
+    char * composition = NULL;
+    Sint32 cursor;
+    Sint32 selection_len;
+    SDL_StartTextInput();
+    while (!done) {
+      SDL_Event event;
+      if (SDL_PollEvent(&event)) {
+        switch (event.type) {
+        case SDL_QUIT:
+          /* Quit */
+          quit_pressed = true;
+          done = SDL_TRUE;
+          break;
+        case SDL_TEXTINPUT:
+          /* Add new text onto the end of our text */
+          text = strcat(text, event.text.text);
+          break;
+        case SDL_TEXTEDITING:
+          /*
+                    Update the composition text.
+                    Update the cursor position.
+                    Update the selection length (if any).
+          */
+          composition = event.edit.text;
+          cursor = event.edit.start;
+          selection_len = event.edit.length;
+          break;
+        }
+      }
+      SDL_RenderPresent(renderer);
     }
     while (delay_time < rand_val && quit_pressed == false) {
       SDL_Delay(1);
@@ -298,5 +336,6 @@ int main (int argc, char * argv[]) {
   TTF_Quit(); // TrueType Fonts (render text)
   IMG_Quit(); // IMG (load from PNG files)
   SDL_Quit(); // Base SDL
-  return 0;
+  cmdline_parser_free(&args_info);
+  exit(EXIT_SUCCESS);
 }

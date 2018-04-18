@@ -103,7 +103,7 @@ CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(includedir)"
 PROGRAMS = $(bin_PROGRAMS)
-am_luck_OBJECTS = luck-main.$(OBJEXT)
+am_luck_OBJECTS = luck-main.$(OBJEXT) luck-cmdline-luck.$(OBJEXT)
 luck_OBJECTS = $(am_luck_OBJECTS)
 luck_LDADD = $(LDADD)
 luck_LINK = $(CCLD) $(luck_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) \
@@ -306,9 +306,9 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 AUTOMAKE_OPTIONS = gnu
-luck_SOURCES = main.c
-include_HEADERS = main.h
-luck_CFLAGS = -lSDL2 -lSDL2_image -lSDL2_ttf -lm
+luck_SOURCES = main.c cmdline-luck.c
+include_HEADERS = main.h cmdline-luck.h
+luck_CFLAGS = 
 all: config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-am
 
@@ -415,6 +415,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/luck-cmdline-luck.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/luck-main.Po@am__quote@
 
 .c.o:
@@ -444,6 +445,20 @@ luck-main.obj: main.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='main.c' object='luck-main.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(luck_CFLAGS) $(CFLAGS) -c -o luck-main.obj `if test -f 'main.c'; then $(CYGPATH_W) 'main.c'; else $(CYGPATH_W) '$(srcdir)/main.c'; fi`
+
+luck-cmdline-luck.o: cmdline-luck.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(luck_CFLAGS) $(CFLAGS) -MT luck-cmdline-luck.o -MD -MP -MF $(DEPDIR)/luck-cmdline-luck.Tpo -c -o luck-cmdline-luck.o `test -f 'cmdline-luck.c' || echo '$(srcdir)/'`cmdline-luck.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/luck-cmdline-luck.Tpo $(DEPDIR)/luck-cmdline-luck.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='cmdline-luck.c' object='luck-cmdline-luck.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(luck_CFLAGS) $(CFLAGS) -c -o luck-cmdline-luck.o `test -f 'cmdline-luck.c' || echo '$(srcdir)/'`cmdline-luck.c
+
+luck-cmdline-luck.obj: cmdline-luck.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(luck_CFLAGS) $(CFLAGS) -MT luck-cmdline-luck.obj -MD -MP -MF $(DEPDIR)/luck-cmdline-luck.Tpo -c -o luck-cmdline-luck.obj `if test -f 'cmdline-luck.c'; then $(CYGPATH_W) 'cmdline-luck.c'; else $(CYGPATH_W) '$(srcdir)/cmdline-luck.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/luck-cmdline-luck.Tpo $(DEPDIR)/luck-cmdline-luck.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='cmdline-luck.c' object='luck-cmdline-luck.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(luck_CFLAGS) $(CFLAGS) -c -o luck-cmdline-luck.obj `if test -f 'cmdline-luck.c'; then $(CYGPATH_W) 'cmdline-luck.c'; else $(CYGPATH_W) '$(srcdir)/cmdline-luck.c'; fi`
 install-includeHEADERS: $(include_HEADERS)
 	@$(NORMAL_INSTALL)
 	@list='$(include_HEADERS)'; test -n "$(includedir)" || list=; \
