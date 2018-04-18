@@ -28,6 +28,10 @@ addons:
     - libsdl2-ttf-dev
     - make
 
+# Add dependencies for Mac
+before_install:
+  - if [ "${TRAVIS_OS_NAME}" = "osx" ]; then brew install sdl2 sdl2-image sdl2-ttf; fi
+
 # Make sure to change to the distribution directory
 before_script:
   - tar zxf "luck-${VERSION}.tar.gz"
@@ -36,4 +40,4 @@ before_script:
 # Actually check if it works
 script:
   - ./configure && make && make check
-  - ./luck
+  - ./luck -V
