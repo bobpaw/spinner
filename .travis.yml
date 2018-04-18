@@ -30,7 +30,7 @@ addons:
 
 # Add dependencies for Mac
 before_install:
-  - if [ "${TRAVIS_OS_NAME}" = "osx" ]; then brew install sdl2 sdl2-image sdl2-ttf; fi
+  - if [ "${TRAVIS_OS_NAME}" = "osx" ]; then brew install sdl2 sdl2_image sdl2_ttf; fi
 
 # Make sure to change to the distribution directory
 before_script:
